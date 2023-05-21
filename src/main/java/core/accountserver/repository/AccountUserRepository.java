@@ -1,4 +1,11 @@
 package core.accountserver.repository;
 
-public interface AccountUserRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import core.accountserver.domain.AccountUser;
+
+@Repository
+public interface AccountUserRepository extends JpaRepository<AccountUser,Long> {
+
 }
