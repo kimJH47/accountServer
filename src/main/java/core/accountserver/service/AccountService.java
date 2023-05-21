@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
-import core.accountserver.domain.account.AccountNumberGenerator;
+import core.accountserver.generator.AccountNumberGenerator;
 import core.accountserver.dto.response.CreateAccountResponse;
 import core.accountserver.exception.user.UserNotFoundException;
 import core.accountserver.repository.AccountRepository;

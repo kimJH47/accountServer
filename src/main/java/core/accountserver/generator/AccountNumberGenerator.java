@@ -1,4 +1,4 @@
-package core.accountserver.domain.account;
+package core.accountserver.generator;
 
 public interface AccountNumberGenerator {
 

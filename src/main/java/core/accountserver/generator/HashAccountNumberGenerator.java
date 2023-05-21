@@ -1,4 +1,4 @@
-package core.accountserver.domain.account;
+package core.accountserver.generator;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
