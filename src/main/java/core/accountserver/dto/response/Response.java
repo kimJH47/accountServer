@@ -1,6 +1,8 @@
 package core.accountserver.dto.response;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import lombok.Getter;
 
@@ -16,4 +18,14 @@ public class Response {
 		return ResponseEntity.ok()
 			.body(new SuccessResponse<>(message, entity));
 	}
+
+	public static ResponseEntity<Response> createBadRequestResponse(String message, MethodArgumentNotValidException e) {
+		FailedResponse failedResponse = new FailedResponse(message);
+		for (FieldError fieldError : e.getFieldErrors()) {
+			failedResponse.input(fieldError.getField(), fieldError.getDefaultMessage());
+		}
+		return ResponseEntity.badRequest()
+			.body(failedResponse);
+	}
+
 }
