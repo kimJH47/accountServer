@@ -16,7 +16,4 @@ public class TimeStampedEntity {
 	LocalDateTime createAt;
 	@LastModifiedDate
 	LocalDateTime updateAt;
-
-	private TimeStampedEntity() {
-	}
 }
