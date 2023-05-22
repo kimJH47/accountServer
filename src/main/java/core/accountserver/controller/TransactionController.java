@@ -38,9 +38,13 @@ public class TransactionController {
 
 	@PostMapping("/transaction/cancel")
 	public ResponseEntity<Response> cancelBalance(@Valid @RequestBody CancelBalanceRequest request) {
-		CancelBalanceResponse response = transactionService.cancelBalance(request.getTransactionId(),
-			request.getAccountNumber(), request.getAmount());
-		return Response.createSuccess("성공적으로 거래가 취소 되었습니다.", response);
+		try {
+			CancelBalanceResponse response = transactionService.cancelBalance(request.getTransactionId(),
+				request.getAccountNumber(), request.getAmount());
+			return Response.createSuccess("성공적으로 거래가 취소 되었습니다.", response);
+		} catch (Exception e) {
+			transactionService.saveFailedTransaction(request.getAccountNumber(), request.getAmount(), CANCEL);
+			throw new TransactionFailedException(e.getMessage());
+		}
 	}
-
 }
