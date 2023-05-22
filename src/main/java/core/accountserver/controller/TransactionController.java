@@ -25,7 +25,7 @@ public class TransactionController {
 		try {
 			UserBalanceResponse response = transactionService.useBalance(request.getUserId(),
 				request.getAccountNumber(), request.getAmount());
-			return Response.createSuccessResponse("성공적으로 거래가 완료 되었습니다.", response);
+			return Response.createSuccess("성공적으로 거래가 완료 되었습니다.", response);
 		} catch (Exception e) {
 			transactionService.saveFailedTransaction(request.getAccountNumber(), request.getAmount());
 			throw new TransactionFailedException(e.getMessage());

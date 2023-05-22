@@ -29,19 +29,19 @@ public class AccountController {
 	public ResponseEntity<Response> createAccount(@RequestBody @Valid CreateAccountRequest createAccountRequest) {
 		CreateAccountResponse response = accountService.createAccount(createAccountRequest.getUserId(),
 			createAccountRequest.getInitialBalance());
-		return Response.createSuccessResponse("성공적으로 계좌가 생성되었습니다.", response);
+		return Response.createSuccess("성공적으로 계좌가 생성되었습니다.", response);
 	}
 
 	@DeleteMapping("/account")
 	public ResponseEntity<Response> deleteAccount(@RequestBody @Valid DeleteAccountRequest deleteAccountRequest) {
 		DeleteAccountResponse response = accountService.deleteAccount(deleteAccountRequest.getUserId(),
 			deleteAccountRequest.getAccountNumber());
-		return Response.createSuccessResponse("성공적으로 계좌가 해지 되었습니다.", response);
+		return Response.createSuccess("성공적으로 계좌가 해지 되었습니다.", response);
 	}
 
 	@GetMapping("/account")
 	public ResponseEntity<Response> findByAccountUserId(
 		@RequestParam("user_id") @Min(value = 1, message = "아이디는 1 이상 이여야 합니다.") @Valid Long id) {
-		return Response.createSuccessResponse("성공적으로 계좌가 조회되었습니다.", accountService.findAccountByUserId(id));
+		return Response.createSuccess("성공적으로 계좌가 조회되었습니다.", accountService.findAccountByUserId(id));
 	}
 }

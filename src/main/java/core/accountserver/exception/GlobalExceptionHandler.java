@@ -15,29 +15,29 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response> handle(MethodArgumentNotValidException e) {
-		return Response.createBadRequestResponse(BAD_REQUEST, e);
+		return Response.createBadRequest(BAD_REQUEST, e);
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<Response> handle(UserNotFoundException e) {
-		return Response.createBadRequestResponse(BAD_REQUEST, "userId", e.getMessage());
+		return Response.createBadRequest(BAD_REQUEST, "userId", e.getMessage());
 	}
 
 	@ExceptionHandler(MaxAccountPerUserException.class)
 	public ResponseEntity<Response> handle(MaxAccountPerUserException e) {
-		return Response.createBadRequestResponse(BAD_REQUEST, "account", e.getMessage());
+		return Response.createBadRequest(BAD_REQUEST, "account", e.getMessage());
 	}
 
 	@ExceptionHandler(value = {
 		UserAccountUnMatchException.class, AccountAlreadyUnregisteredException.class,
 		AccountNotFoundException.class, AccountHasBalanceException.class, AccountAlreadyUnregisteredException.class})
 	public ResponseEntity<Response> handle(Exception e) {
-		return Response.createBadRequestResponse(BAD_REQUEST, "account", e.getMessage());
+		return Response.createBadRequest(BAD_REQUEST, "account", e.getMessage());
 	}
 
 	@ExceptionHandler(TransactionFailedException.class)
 	public ResponseEntity<Response> handle(TransactionFailedException e) {
-		return Response.createBadRequestResponse(BAD_REQUEST, "transaction", e.getMessage());
+		return Response.createBadRequest(BAD_REQUEST, "transaction", e.getMessage());
 	}
 
 }

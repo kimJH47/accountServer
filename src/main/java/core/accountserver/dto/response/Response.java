@@ -14,12 +14,12 @@ public class Response {
 		this.message = message;
 	}
 
-	public static <T> ResponseEntity<Response> createSuccessResponse(String message, T entity) {
+	public static <T> ResponseEntity<Response> createSuccess(String message, T entity) {
 		return ResponseEntity.ok()
 			.body(new SuccessResponse<>(message, entity));
 	}
 
-	public static ResponseEntity<Response> createBadRequestResponse(String message, MethodArgumentNotValidException e) {
+	public static ResponseEntity<Response> createBadRequest(String message, MethodArgumentNotValidException e) {
 		FailedResponse failedResponse = new FailedResponse(message);
 		for (FieldError fieldError : e.getFieldErrors()) {
 			failedResponse.input(fieldError.getField(), fieldError.getDefaultMessage());
@@ -28,7 +28,7 @@ public class Response {
 			.body(failedResponse);
 	}
 
-	public static ResponseEntity<Response> createBadRequestResponse(String message,String fieldName,String reasons) {
+	public static ResponseEntity<Response> createBadRequest(String message,String fieldName,String reasons) {
 		FailedResponse failedResponse = new FailedResponse(message);
 		failedResponse.input(fieldName,reasons);
 		return ResponseEntity.badRequest()
