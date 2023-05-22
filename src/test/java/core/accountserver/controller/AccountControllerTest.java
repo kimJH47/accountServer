@@ -120,6 +120,8 @@ class AccountControllerTest {
 			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
 			.andExpect(jsonPath("$.reasons.userId").value("해당 사용자가 존재하지 않습니다."));
 
+		then(accountService).should(times(1)).createAccount(anyLong(), anyLong());
+
 	}
 
 }
