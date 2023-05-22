@@ -1,6 +1,6 @@
 package core.accountserver.domain.transaction;
 
-import static core.accountserver.domain.transaction.TransactionResultType.*;
+import static core.accountserver.domain.transaction.TransactionResult.*;
 import static core.accountserver.domain.transaction.TransactionType.*;
 
 import java.time.LocalDateTime;
@@ -35,7 +35,7 @@ public class Transaction extends TimeStampedEntity {
 	@Enumerated(EnumType.STRING)
 	private TransactionType transactionType;
 	@Enumerated(EnumType.STRING)
-	private TransactionResultType transactionResultType;
+	private TransactionResult transactionResult;
 	@ManyToOne
 	private Account account;
 	private Long amount;
@@ -46,7 +46,7 @@ public class Transaction extends TimeStampedEntity {
 	public static Transaction createSuccessTransaction(Account account,Long amount) {
 		return Transaction.builder()
 			.transactionType(USE)
-			.transactionResultType(SUCCESS)
+			.transactionResult(SUCCESS)
 			.account(account)
 			.amount(amount)
 			.balanceSnapshot(account.getBalance())
@@ -58,7 +58,7 @@ public class Transaction extends TimeStampedEntity {
 	public static Transaction createFailTransaction(Account account, Long amount) {
 		return Transaction.builder()
 			.transactionType(CANCEL)
-			.transactionResultType(FAIL)
+			.transactionResult(FAIL)
 			.account(account)
 			.amount(amount)
 			.balanceSnapshot(account.getBalance())

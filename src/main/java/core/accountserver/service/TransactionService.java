@@ -44,7 +44,7 @@ public class TransactionService {
 
 		return UseBalanceResponse.builder()
 			.accountNumber(accountNumber)
-			.transactionResult(transaction.getTransactionResultType())
+			.transactionResult(transaction.getTransactionResult())
 			.transactionId(transaction.getTransactionId())
 			.amount(amount)
 			.transactedAt(transaction.getTransactedAt())

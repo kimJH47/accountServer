@@ -1,5 +1,5 @@
 package core.accountserver.domain.transaction;
 
-public enum TransactionResultType {
+public enum TransactionResult {
 	SUCCESS,FAIL
 }

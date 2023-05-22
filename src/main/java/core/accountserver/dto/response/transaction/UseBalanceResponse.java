@@ -2,7 +2,7 @@ package core.accountserver.dto.response.transaction;
 
 import java.time.LocalDateTime;
 
-import core.accountserver.domain.transaction.TransactionResultType;
+import core.accountserver.domain.transaction.TransactionResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UseBalanceResponse {
 	private String accountNumber;
-	private TransactionResultType transactionResult;
+	private TransactionResult transactionResult;
 	private String transactionId;
 	private Long amount;
 	private LocalDateTime transactedAt;

@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import core.accountserver.domain.transaction.TransactionResultType;
+import core.accountserver.domain.transaction.TransactionResult;
 import core.accountserver.dto.request.transaction.UserBalanceRequest;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
@@ -53,7 +53,7 @@ class TransactionControllerTest {
 				.transactedAt(LocalDateTime.now())
 				.amount(12345L)
 				.transactionId("transactionId")
-				.transactionResult(TransactionResultType.SUCCESS)
+				.transactionResult(TransactionResult.SUCCESS)
 				.build());
 		UserBalanceRequest request = new UserBalanceRequest(1L, "2000000000", 3000L);
 
