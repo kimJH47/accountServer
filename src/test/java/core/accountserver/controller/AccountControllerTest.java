@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.dto.request.CreateAccountRequest;
 import core.accountserver.dto.request.DeleteAccountRequest;
+import core.accountserver.dto.response.AccountSearchResponse;
 import core.accountserver.dto.response.CreateAccountResponse;
 import core.accountserver.dto.response.DeleteAccountResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
@@ -204,7 +206,7 @@ class AccountControllerTest {
 	@ParameterizedTest
 	@MethodSource("invalidRequestProvider")
 	@DisplayName("유효하지 않는 데이터를 요청으로 보내면 응답코드 400과 함께 실패이유를 응답 받아야한다.")
-	void delete_unValid(DeleteAccountRequest invalidRequest, String fieldName,String reasons) throws Exception {
+	void delete_unValid(DeleteAccountRequest invalidRequest, String fieldName, String reasons) throws Exception {
 		//expect
 		mockMvc.perform(delete("/account")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -222,5 +224,61 @@ class AccountControllerTest {
 			Arguments.of(new DeleteAccountRequest(1L, "12345678901"), "accountNumber", "계좌번호는 10자리여야합니다.")
 		);
 	}
+
+	@Test
+	@DisplayName("user id 를 응답으로 보내면 해당 하는 계좌들이 응답코드 200과 함깨 응답되어야한다.")
+	void find() throws Exception {
+		//given
+		ArrayList<AccountSearchResponse> responses = new ArrayList<>();
+		responses.add(new AccountSearchResponse("1111111111", 10000L));
+		responses.add(new AccountSearchResponse("1111111112", 20000L));
+		responses.add(new AccountSearchResponse("1111111113", 30000L));
+		given(accountService.findAccountByUserId(anyLong())).willReturn(responses);
+
+		//expect
+		mockMvc.perform(get("/account?user_id=1"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("성공적으로 계좌가 조회되었습니다."))
+			.andExpect(jsonPath("$.entity[0].accountNumber").value("1111111111"))
+			.andExpect(jsonPath("$.entity[0].balance").value(10000L))
+
+			.andExpect(jsonPath("$.entity[1].accountNumber").value("1111111112"))
+			.andExpect(jsonPath("$.entity[1].balance").value(20000L))
+
+			.andExpect(jsonPath("$.entity[2].accountNumber").value("1111111113"))
+			.andExpect(jsonPath("$.entity[2].balance").value(30000L));
+
+	}
+
+	@Test
+	@DisplayName("유효하지 않은 user Id 를 요청으로 보내면 응답코드 400과 함깨 실패이유를 응답 받아야한다.")
+	void find_invalidRequest() throws Exception {
+		//given
+		given(accountService.findAccountByUserId(anyLong()))
+			.willThrow(new UserNotFoundException("해당 사용자가 존재하지 않습니다."));
+		//expect
+		mockMvc.perform(get("/account?user_id=-1")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons.userId").value("해당 사용자가 존재하지 않습니다."));
+		then(accountService).should(times(1)).findAccountByUserId(anyLong());
+	}
+
+	@Test
+	@DisplayName(" 존재하지 않는 계좌번호의 User id 를 요청으로 보내면 응답코드 400과 함깨 실패이유를 응답 받아야한다.")
+	void find_notFoundAccount() throws Exception {
+		//given
+		given(accountService.findAccountByUserId(anyLong()))
+			.willThrow(new AccountNotFoundException("해당 계좌가 존재하지 않습니다."));
+		//expect
+		mockMvc.perform(get("/account?user_id=1")
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons.account").value("해당 계좌가 존재하지 않습니다."));
+		then(accountService).should(times(1)).findAccountByUserId(anyLong());
+	}
+
 
 }

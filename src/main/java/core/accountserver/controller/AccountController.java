@@ -2,7 +2,6 @@ package core.accountserver.controller;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,9 +41,7 @@ public class AccountController {
 
 	@GetMapping("/account")
 	public ResponseEntity<Response> findByAccountUserId(
-		@RequestParam("user_id")
-		@NotNull(message = "아이디 값은 필수로 존재해야 합니다.")
-		@Min(value = 1, message = "아이디는 1 이상 이여야 합니다.") @Valid Long id) {
+		@RequestParam("user_id") @Min(value = 1, message = "아이디는 1 이상 이여야 합니다.") @Valid Long id) {
 		return Response.createSuccessResponse("성공적으로 계좌가 조회되었습니다.", accountService.findAccountByUserId(id));
 	}
 }
