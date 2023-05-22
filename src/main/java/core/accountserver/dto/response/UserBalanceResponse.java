@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserBalanceResponse {
 	private String accountNumber;
-	private TransactionResultType transactionResultType;
-	private LocalDateTime registeredAt;
+	private TransactionResultType transactionResult;
+	private String transactionId;
+	private Long amount;
+	private LocalDateTime transactedAt;
 }
