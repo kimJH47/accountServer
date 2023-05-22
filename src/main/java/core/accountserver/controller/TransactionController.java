@@ -1,5 +1,7 @@
 package core.accountserver.controller;
 
+import static core.accountserver.domain.transaction.TransactionType.*;
+
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
