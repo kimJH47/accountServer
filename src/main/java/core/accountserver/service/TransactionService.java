@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
 import core.accountserver.domain.transaction.Transaction;
+import core.accountserver.dto.response.transaction.CancelBalanceResponse;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.account.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.account.AccountExceedBalanceException;
@@ -70,5 +71,9 @@ public class TransactionService {
 		Account account = accountRepository.findByAccountNumber(accountNumber)
 			.orElseThrow(() -> new AccountNotFoundException("해당 계좌가 존재하지 않습니다."));
 		transactionRepository.save(Transaction.createFailTransaction(account, amount));
+	}
+
+	public CancelBalanceResponse cancelBalance(String transactionId, String accountNumber, Long amount) {
+		return null;
 	}
 }
