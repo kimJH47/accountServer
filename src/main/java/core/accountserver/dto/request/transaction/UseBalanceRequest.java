@@ -6,12 +6,13 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
+import core.accountserver.aop.AccountLockRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UseBalanceRequest {
+public class UseBalanceRequest implements AccountLockRequest {
 
 	@NotNull(message = "아이디 값은 필수로 존재해야 합니다.")
 	@Min(value = 1, message = "아이디는 1 이상 이여야 합니다.")

@@ -5,12 +5,13 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
+import core.accountserver.aop.AccountLockRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CancelBalanceRequest {
+public class CancelBalanceRequest implements AccountLockRequest {
 
 	@NotNull(message = "아이디 값은 필수로 존재해야 합니다.")
 	private final String transactionId;
