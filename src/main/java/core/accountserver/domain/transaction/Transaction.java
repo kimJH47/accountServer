@@ -2,8 +2,10 @@ package core.accountserver.domain.transaction;
 
 import static core.accountserver.domain.transaction.TransactionResult.*;
 import static core.accountserver.domain.transaction.TransactionType.*;
+import static core.accountserver.policy.TransactionConstant.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Entity;
@@ -42,6 +44,22 @@ public class Transaction extends TimeStampedEntity {
 	private Long balanceSnapshot;
 	private String transactionId;
 	private LocalDateTime transactedAt;
+
+	public boolean isValidTransactionDate() {
+		return transactedAt.isBefore(LocalDateTime.now().minusYears(MAX_TRANSACTION_CANCEL_YEARS_BOUND));
+	}
+
+	public boolean isCancel() {
+		return transactionType.equals(CANCEL);
+	}
+
+	public boolean isFailed() {
+		return transactionResult.equals(FAIL);
+	}
+
+	public boolean isSameAmount(Long amount) {
+		return Objects.equals(this.amount, amount);
+	}
 
 	public static Transaction createSuccessTransaction(Account account, Long amount, TransactionType transactionType) {
 		return Transaction.builder()
