@@ -3,6 +3,10 @@ package core.accountserver.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
 import core.accountserver.domain.account.AccountStatus;
+import core.accountserver.dto.response.AccountSearchResponse;
 import core.accountserver.dto.response.CreateAccountResponse;
 import core.accountserver.dto.response.DeleteAccountResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
@@ -193,6 +198,61 @@ class AccountServiceTest {
 			.hasMessage("이미 해지된 계좌번호 입니다.");
 		then(accountUserRepository).should(times(1)).findById(anyLong());
 		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
+	}
+
+	@Test
+	@DisplayName("userId 를 받아 해당하는 계좌번호 response 를 반환해야한다.")
+	void find() {
+
+		//given
+		AccountUser user = createAccountUser(1L, "user");
+		ArrayList<Account> accounts = new ArrayList<>();
+		LocalDateTime now = LocalDateTime.now();
+		accounts.add(new Account(1L,user,"1111111111",AccountStatus.IN_USE,1000L, now,null));
+		accounts.add(new Account(2L,user,"1111111112",AccountStatus.IN_USE,2000L, now,null));
+		accounts.add(new Account(3L,user,"1111111113",AccountStatus.IN_USE,3000L, now,null));
+
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
+		given(accountRepository.findByAccountUser(any(AccountUser.class))).willReturn(accounts);
+
+		//when
+		List<AccountSearchResponse> actual = accountService.findAccountByUserId(1L);
+		//then
+		for (int i = 0; i < actual.size(); i++) {
+			AccountSearchResponse expected = actual.get(i);
+			assertThat(expected.getAccountNumber()).isEqualTo(accounts.get(i).getAccountNumber());
+			assertThat(expected.getBalance()).isEqualTo(accounts.get(i).getBalance());
+		}
+
+	}
+
+	@Test
+	@DisplayName("userId 가 존재하지 않을 시 UserNotFoundException 을 던져야한다.")
+	void find_userNotFound() throws Exception {
+		//given
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
+		//expect
+		assertThatThrownBy(() -> accountService.findAccountByUserId(1L))
+			.isInstanceOf(UserNotFoundException.class)
+			.hasMessage("해당 사용자가 존재하지 않습니다.");
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+	}
+
+	@Test
+	@DisplayName("계좌가 가 존재하지 않을 시 AccountNotFoundException 을 던져야한다.")
+	void find_accountNotFound() throws Exception {
+		//given
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(createAccountUser(1L, "kim")));
+		given(accountRepository.findByAccountUser(any(AccountUser.class))).willReturn(Collections.emptyList());
+		//expect
+		assertThatThrownBy(() -> accountService.findAccountByUserId(1L))
+			.isInstanceOf(AccountNotFoundException.class)
+			.hasMessage("해당 계좌가 존재하지 않습니다.");
+
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+		then(accountRepository).should(times(1)).findByAccountUser(any(AccountUser.class));
+
+
 	}
 
 	private AccountUser createAccountUser(long userId, String name) {
