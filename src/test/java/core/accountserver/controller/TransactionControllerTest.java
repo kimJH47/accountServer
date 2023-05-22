@@ -72,7 +72,29 @@ class TransactionControllerTest {
 
 	@ParameterizedTest
 	@MethodSource("invalidRequestProvider")
-	@DisplayName("유효하지 못한 거래요청을 할 시 응답코드 400과 함께 실패한 이유가 응답으로 와야한다.")
+	@DisplayName("유효하지 못한 거래 요청이 올시 응답코드 400과 함께 실패한 이유가 응답으로 와야한다")
+	void useBalance_invalidRequest(UserBalanceRequest userBalanceRequest, String fieldName) throws Exception{
+		//expect
+		mockMvc.perform(post("/transaction/use")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(userBalanceRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons." + fieldName).exists());
+
+	}
+	public static Stream<Arguments> invalidRequestProvider() {
+		return Stream.of(
+			Arguments.of(new UserBalanceRequest(-1L, "1111111111", 100L), "userId"),
+			Arguments.of(new UserBalanceRequest(1L, "11111111110", 10L), "accountNumber"),
+			Arguments.of(new UserBalanceRequest(1L, "1111111111", 9L), "amount"),
+			Arguments.of(new UserBalanceRequest(1L, "1111111111", 1000_000_001L), "amount")
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("invalidTransactionProvider")
+	@DisplayName("거래에 실패 할 시 응답코드 400과 함께 실패한 이유가 응답으로 와야한다.")
 	void useBalance_exception(RuntimeException e) throws Exception {
 		//given
 		given(transactionService.useBalance(anyLong(), anyString(), anyLong()))
@@ -88,7 +110,7 @@ class TransactionControllerTest {
 			.andExpect(jsonPath("$.reasons.transaction").value(e.getMessage()));
 	}
 
-	public static Stream<Arguments> invalidRequestProvider() {
+	public static Stream<Arguments> invalidTransactionProvider() {
 		return Stream.of(Arguments.of(new UserNotFoundException("해당 사용자가 존재하지 않습니다.")),
 			Arguments.of(new AccountNotFoundException("해당 계좌가 존재하지 않습니다.")),
 			Arguments.of(new UserAccountUnMatchException("사용자와 계좌의 소유주가 다릅니다.")),
