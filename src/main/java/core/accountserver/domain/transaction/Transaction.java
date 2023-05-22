@@ -43,9 +43,9 @@ public class Transaction extends TimeStampedEntity {
 	private String transactionId;
 	private LocalDateTime transactedAt;
 
-	public static Transaction createSuccessTransaction(Account account,Long amount) {
+	public static Transaction createSuccessTransaction(Account account, Long amount, TransactionType transactionType) {
 		return Transaction.builder()
-			.transactionType(USE)
+			.transactionType(transactionType)
 			.transactionResult(SUCCESS)
 			.account(account)
 			.amount(amount)
