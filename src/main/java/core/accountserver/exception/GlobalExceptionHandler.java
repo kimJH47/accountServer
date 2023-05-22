@@ -12,6 +12,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response> handle(MethodArgumentNotValidException e) {
-		return Response.createBadRequestResponse("잘못된 요청입니다", e);
+		return Response.createBadRequestResponse("잘못된 요청입니다.", e);
 	}
 }
