@@ -119,7 +119,7 @@ public class TransactionService {
 		if (transaction.isValidTransactionDate()) {
 			throw new TooOldOrderToCancelException("취소 가능한 거래 날짜가 지났습니다.");
 		}
-		if (transaction.isSameAmount(amount)) {
+		if (!transaction.isSameAmount(amount)) {
 			throw new CancelMustFullyException("취소금액은 거래된 금액과 일치 해야 합니다.");
 		}
 	}
