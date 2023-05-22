@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import core.accountserver.dto.request.UserBalanceRequest;
 import core.accountserver.dto.response.Response;
+import core.accountserver.dto.response.UserBalanceResponse;
+import core.accountserver.exception.TransactionFailedException;
 import core.accountserver.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +22,14 @@ public class TransactionController {
 
 	@PostMapping("/transaction/use")
 	public ResponseEntity<Response> useBalance(@Valid @RequestBody UserBalanceRequest request){
-		return Response.createSuccessResponse("성공적으로 거래가 완료 되었습니다.",
-			transactionService.useBalance(request.getUserId(), request.getAccountNumber(), request.getAmount()));
+		try {
+			UserBalanceResponse response = transactionService.useBalance(request.getUserId(),
+				request.getAccountNumber(), request.getAmount());
+			return Response.createSuccessResponse("성공적으로 거래가 완료 되었습니다.", response);
+		} catch (Exception e) {
+			transactionService.saveFailedTransaction(request.getAccountNumber(), request.getAmount());
+			throw new TransactionFailedException(e.getMessage());
+		}
 	}
+
 }

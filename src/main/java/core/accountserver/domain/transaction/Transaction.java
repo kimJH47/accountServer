@@ -43,7 +43,7 @@ public class Transaction extends TimeStampedEntity {
 	private String transactionId;
 	private LocalDateTime transactedAt;
 
-	public static Transaction create(Account account,Long amount) {
+	public static Transaction createSuccessTransaction(Account account,Long amount) {
 		return Transaction.builder()
 			.transactionType(USE)
 			.transactionResultType(SUCCESS)
@@ -55,4 +55,15 @@ public class Transaction extends TimeStampedEntity {
 			.build();
 	}
 
+	public static Transaction createFailTransaction(Account account, Long amount) {
+		return Transaction.builder()
+			.transactionType(CANCEL)
+			.transactionResultType(FAIL)
+			.account(account)
+			.amount(amount)
+			.balanceSnapshot(account.getBalance())
+			.transactionId(UUID.randomUUID().toString().replace("-", ""))
+			.transactedAt(LocalDateTime.now())
+			.build();
+	}
 }

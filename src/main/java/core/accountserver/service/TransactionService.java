@@ -5,6 +5,7 @@ import static core.accountserver.domain.account.AccountStatus.*;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
@@ -28,6 +29,7 @@ public class TransactionService {
 	private final AccountUserRepository accountUserRepository;
 	private final AccountRepository accountRepository;
 
+	@Transactional
 	public UserBalanceResponse useBalance(Long userId, String accountNumber, Long amount) {
 
 		AccountUser accountUser = accountUserRepository.findById(userId)
@@ -36,8 +38,9 @@ public class TransactionService {
 			.orElseThrow(() -> new AccountNotFoundException("해당 계좌가 존재하지 않습니다."));
 
 		validUserBalance(accountUser, account, amount);
+
 		account.userBalance(amount);
-		Transaction transaction = transactionRepository.save(Transaction.create(account, amount));
+		Transaction transaction = transactionRepository.save(Transaction.createSuccessTransaction(account, amount));
 
 		return UserBalanceResponse.builder()
 			.accountNumber(accountNumber)
@@ -60,5 +63,12 @@ public class TransactionService {
 			throw new AccountExceedBalanceException("거래금액이 계좌 잔액보다 큽니다.");
 		}
 
+	}
+
+	@Transactional
+	public void saveFailedTransaction(String accountNumber, Long amount) {
+		Account account = accountRepository.findByAccountNumber(accountNumber)
+			.orElseThrow(() -> new AccountNotFoundException("해당 계좌가 존재하지 않습니다."));
+		transactionRepository.save(Transaction.createFailTransaction(account, amount));
 	}
 }
