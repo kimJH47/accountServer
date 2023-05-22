@@ -12,6 +12,7 @@ import core.accountserver.exception.user.UserNotFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 	private static final String BAD_REQUEST = "잘못된 요청입니다.";
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response> handle(MethodArgumentNotValidException e) {
 		return Response.createBadRequestResponse(BAD_REQUEST, e);
@@ -26,4 +27,12 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<Response> handle(MaxAccountPerUserException e) {
 		return Response.createBadRequestResponse(BAD_REQUEST, "account", e.getMessage());
 	}
+
+	@ExceptionHandler(value = {
+		UserAccountUnMatchException.class, AccountAlreadyUnregisteredException.class,
+		AccountNotFoundException.class, AccountHasBalanceException.class, AccountAlreadyUnregisteredException.class})
+	public ResponseEntity<Response> handle(Exception e) {
+		return Response.createBadRequestResponse(BAD_REQUEST, "account", e.getMessage());
+	}
+
 }
