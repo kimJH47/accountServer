@@ -73,9 +73,9 @@ public class Transaction extends TimeStampedEntity {
 			.build();
 	}
 
-	public static Transaction createFailTransaction(Account account, Long amount) {
+	public static Transaction createFailTransaction(Account account, Long amount, TransactionType cancel) {
 		return Transaction.builder()
-			.transactionType(CANCEL)
+			.transactionType(cancel)
 			.transactionResult(FAIL)
 			.account(account)
 			.amount(amount)
