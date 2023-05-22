@@ -1,6 +1,7 @@
 package core.accountserver.service;
 
 import static core.accountserver.domain.transaction.TransactionResult.*;
+import static core.accountserver.domain.transaction.TransactionType.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -54,7 +55,7 @@ class TransactionServiceTest {
 		String accountNumber = "1000000001";
 		AccountUser user = createAccountUser(userId, "kim");
 		Account account = createAccount(user, accountNumber, 1000L, AccountStatus.IN_USE);
-		Transaction successTransaction = Transaction.createSuccessTransaction(account, 100L);
+		Transaction successTransaction = Transaction.createSuccessTransaction(account, 100L, USE);
 
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
 		given(accountRepository.findByAccountNumber(accountNumber)).willReturn(Optional.of(account));
