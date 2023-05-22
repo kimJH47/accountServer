@@ -86,6 +86,7 @@ public class TransactionService {
 	public CancelBalanceResponse cancelBalance(String transactionId, String accountNumber, Long amount) {
 		Account account = accountRepository.findByAccountNumber(accountNumber)
 			.orElseThrow(() -> new AccountNotFoundException("해당 계좌가 존재하지 않습니다."));
+		validAccount(account);
 		Transaction transaction = transactionRepository.findByTransactionId(transactionId)
 			.orElseThrow(() -> new TransactionNotFoundException("해당 거래내역이 존재하지 않습니다."));
 		validCancelBalance(account, transaction, amount);
@@ -104,9 +105,6 @@ public class TransactionService {
 	}
 
 	private void validCancelBalance(Account account, Transaction transaction, Long amount) {
-		if (account.isUnRegistered()) {
-			throw new AccountAlreadyUnregisteredException("이미 해지된 계좌번호 입니다.");
-		}
 		if (!Objects.equals(account.getId(), transaction.getAccount().getId())) {
 			throw new AccountTransactionUnMatchException("해당계좌에서 발생된 거래가 아닙니다.");
 		}
@@ -121,6 +119,12 @@ public class TransactionService {
 		}
 		if (!transaction.isSameAmount(amount)) {
 			throw new CancelMustFullyException("취소금액은 거래된 금액과 일치 해야 합니다.");
+		}
+	}
+
+	private void validAccount(Account account) {
+		if (account.isUnRegistered()) {
+			throw new AccountAlreadyUnregisteredException("이미 해지된 계좌번호 입니다.");
 		}
 	}
 }
