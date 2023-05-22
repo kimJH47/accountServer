@@ -6,6 +6,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
+import core.accountserver.exception.RedisClientException;
 import core.accountserver.exception.transaction.TransactionHasLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,8 @@ public class LockService {
 			if (!lock.tryLock(1, 5, TimeUnit.SECONDS)) {
 				throw new TransactionHasLockException("해당 계좌는 사용중입니다.");
 			}
-		} catch (Exception e) {
-			log.error("Redis lock failed");
+		} catch (InterruptedException e) {
+			throw new RedisClientException(e);
 		}
 	}
 
