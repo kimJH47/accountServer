@@ -1,4 +1,4 @@
-package core.accountserver.exception;
+package core.accountserver.exception.account;
 
 public class UserAccountUnMatchException extends RuntimeException {
 	public UserAccountUnMatchException(String message) {

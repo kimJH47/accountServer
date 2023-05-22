@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.TimeStampedEntity;
-import core.accountserver.exception.AccountExceedBalanceException;
+import core.accountserver.exception.account.AccountExceedBalanceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

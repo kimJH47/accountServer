@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import core.accountserver.domain.transaction.TransactionResult;
 import core.accountserver.dto.request.transaction.UserBalanceRequest;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
-import core.accountserver.exception.AccountAlreadyUnregisteredException;
-import core.accountserver.exception.AccountExceedBalanceException;
-import core.accountserver.exception.AccountNotFoundException;
-import core.accountserver.exception.UserAccountUnMatchException;
+import core.accountserver.exception.account.AccountAlreadyUnregisteredException;
+import core.accountserver.exception.account.AccountExceedBalanceException;
+import core.accountserver.exception.account.AccountNotFoundException;
+import core.accountserver.exception.account.UserAccountUnMatchException;
 import core.accountserver.exception.user.UserNotFoundException;
 import core.accountserver.service.TransactionService;
 

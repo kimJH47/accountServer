@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import core.accountserver.dto.request.transaction.UserBalanceRequest;
 import core.accountserver.dto.response.Response;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
-import core.accountserver.exception.TransactionFailedException;
+import core.accountserver.exception.transaction.TransactionFailedException;
 import core.accountserver.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 
