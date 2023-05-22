@@ -91,7 +91,8 @@ public class TransactionService {
 		validCancelBalance(account, transaction, amount);
 
 		account.cancelBalance(amount);
-		Transaction createTransaction = Transaction.createSuccessTransaction(account, amount, CANCEL);
+		Transaction createTransaction = transactionRepository.save(
+			Transaction.createSuccessTransaction(account, amount, CANCEL));
 
 		return CancelBalanceResponse.builder()
 			.transactedAt(createTransaction.getTransactedAt())
