@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.domain.transaction.TransactionResult;
-import core.accountserver.dto.request.transaction.UserBalanceRequest;
+import core.accountserver.dto.request.transaction.UseBalanceRequest;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.account.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.account.AccountExceedBalanceException;
@@ -55,7 +55,7 @@ class TransactionControllerTest {
 				.transactionId("transactionId")
 				.transactionResult(TransactionResult.SUCCESS)
 				.build());
-		UserBalanceRequest request = new UserBalanceRequest(1L, "2000000000", 3000L);
+		UseBalanceRequest request = new UseBalanceRequest(1L, "2000000000", 3000L);
 
 		//expect
 		mockMvc.perform(post("/transaction/use")
@@ -73,11 +73,11 @@ class TransactionControllerTest {
 	@ParameterizedTest
 	@MethodSource("invalidRequestProvider")
 	@DisplayName("유효하지 못한 거래 요청이 올시 응답코드 400과 함께 실패한 이유가 응답으로 와야한다")
-	void useBalance_invalidRequest(UserBalanceRequest userBalanceRequest, String fieldName) throws Exception{
+	void useBalance_invalidRequest(UseBalanceRequest useBalanceRequest, String fieldName) throws Exception{
 		//expect
 		mockMvc.perform(post("/transaction/use")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsString(userBalanceRequest)))
+				.content(mapper.writeValueAsString(useBalanceRequest)))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
 			.andExpect(jsonPath("$.reasons." + fieldName).exists());
@@ -85,10 +85,10 @@ class TransactionControllerTest {
 	}
 	public static Stream<Arguments> invalidRequestProvider() {
 		return Stream.of(
-			Arguments.of(new UserBalanceRequest(-1L, "1111111111", 100L), "userId"),
-			Arguments.of(new UserBalanceRequest(1L, "11111111110", 10L), "accountNumber"),
-			Arguments.of(new UserBalanceRequest(1L, "1111111111", 9L), "amount"),
-			Arguments.of(new UserBalanceRequest(1L, "1111111111", 1000_000_001L), "amount")
+			Arguments.of(new UseBalanceRequest(-1L, "1111111111", 100L), "userId"),
+			Arguments.of(new UseBalanceRequest(1L, "11111111110", 10L), "accountNumber"),
+			Arguments.of(new UseBalanceRequest(1L, "1111111111", 9L), "amount"),
+			Arguments.of(new UseBalanceRequest(1L, "1111111111", 1000_000_001L), "amount")
 		);
 	}
 
@@ -99,7 +99,7 @@ class TransactionControllerTest {
 		//given
 		given(transactionService.useBalance(anyLong(), anyString(), anyLong()))
 			.willThrow(e);
-		UserBalanceRequest request = new UserBalanceRequest(1L, "2000000000", 3000L);
+		UseBalanceRequest request = new UseBalanceRequest(1L, "2000000000", 3000L);
 
 		//expect
 		mockMvc.perform(post("/transaction/use")

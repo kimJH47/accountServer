@@ -11,7 +11,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserBalanceRequest {
+public class UseBalanceRequest {
 
 	@NotNull(message = "아이디 값은 필수로 존재해야 합니다.")
 	@Min(value = 1, message = "아이디는 1 이상 이여야 합니다.")
