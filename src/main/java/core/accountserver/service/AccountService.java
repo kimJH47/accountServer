@@ -5,6 +5,7 @@ import static core.accountserver.policy.AccountConstant.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +86,16 @@ public class AccountService {
 		}
 	}
 
-	public List<AccountSearchResponse> findAccountByUserId(long id) {
-		return null;
+	@Transactional(readOnly = true)
+	public List<AccountSearchResponse> findAccountByUserId(long userId) {
+		AccountUser accountUser = accountUserRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException("해당 사용자가 존재하지 않습니다."));
+		List<Account> accounts = accountUserRepository.findByAccountUser(accountUser);
+		if (accounts.isEmpty()) {
+			throw new AccountNotFoundException("해당 계좌가 존재하지 않습니다.");
+		}
+		return accounts.stream()
+			.map(account -> AccountSearchResponse.create(account.getAccountNumber(), account.getBalance()))
+			.collect(Collectors.toList());
 	}
 }
