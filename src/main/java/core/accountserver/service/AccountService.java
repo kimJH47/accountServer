@@ -54,6 +54,7 @@ public class AccountService {
 			throw new MaxAccountPerUserException("계좌가 이미 최대 갯수만큼 존재합니다.");
 		}
 	}
+
 	@Transactional
 	public DeleteAccountResponse deleteAccount(Long userId, String accountNumber) {
 		AccountUser accountUser = accountUserRepository.findById(userId)
@@ -71,7 +72,7 @@ public class AccountService {
 	}
 
 	private void validDeleteAccount(AccountUser accountUser, Account account) {
-		if (Objects.equals(account.getAccountUser().getId(), accountUser.getId())) {
+		if (!Objects.equals(account.getAccountUser().getId(), accountUser.getId())) {
 			throw new UserAccountUnMatchException("사용자와 계좌의 소유주가 다릅니다.");
 		}
 		if (account.getAccountStatus().equals(UNREGISTERED)) {
