@@ -38,7 +38,7 @@ public class TransactionService {
 		Account account = accountRepository.findByAccountNumber(accountNumber)
 			.orElseThrow(() -> new AccountNotFoundException("해당 계좌가 존재하지 않습니다."));
 
-		validUserBalance(accountUser, account, amount);
+		validUseBalance(accountUser, account, amount);
 
 		account.userBalance(amount);
 		Transaction transaction = transactionRepository.save(Transaction.createSuccessTransaction(account, amount));
@@ -52,7 +52,7 @@ public class TransactionService {
 			.build();
 	}
 
-	private void validUserBalance(AccountUser user, Account account, Long amount) {
+	private void validUseBalance(AccountUser user, Account account, Long amount) {
 
 		if (!Objects.equals(user.getId(), account.getAccountUser().getId())) {
 			throw new UserAccountUnMatchException("사용자와 계좌의 소유주가 다릅니다.");
