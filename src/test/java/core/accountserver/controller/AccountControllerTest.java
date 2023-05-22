@@ -22,7 +22,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.dto.request.CreateAccountRequest;
+import core.accountserver.dto.request.DeleteAccountRequest;
 import core.accountserver.dto.response.CreateAccountResponse;
+import core.accountserver.dto.response.DeleteAccountResponse;
+import core.accountserver.exception.AccountAlreadyUnregisteredException;
+import core.accountserver.exception.AccountHasBalanceException;
+import core.accountserver.exception.AccountNotFoundException;
+import core.accountserver.exception.UserAccountUnMatchException;
 import core.accountserver.exception.user.MaxAccountPerUserException;
 import core.accountserver.exception.user.UserNotFoundException;
 import core.accountserver.repository.AccountRepository;
@@ -142,6 +148,79 @@ class AccountControllerTest {
 			.andExpect(jsonPath("$.reasons.account").value("계좌가 이미 최대 갯수만큼 존재합니다."));
 
 		then(accountService).should(times(1)).createAccount(anyLong(), anyLong());
+	}
+
+	@Test
+	@DisplayName("/account delete 를 통해 계좌 해지 요청을 보내면 응답코드 200과 함깨 해지된 계좌번호와, 해지일시, 사용자 id 를 응답받아야한다.")
+	void delete_success() throws Exception {
+		DeleteAccountRequest request = new DeleteAccountRequest(1L, "1111111111");
+		LocalDateTime now = LocalDateTime.now();
+		given(accountService.deleteAccount(anyLong(), anyString()))
+			.willReturn(new DeleteAccountResponse(1L, "1111111111", now));
+
+		//expect
+		mockMvc.perform(delete("/account")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(request)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("성공적으로 계좌가 해지 되었습니다."))
+			.andExpect(jsonPath("$.entity.userId").value(1L))
+			.andExpect(jsonPath("$.entity.accountNumber").value("1111111111"))
+			.andExpect(jsonPath("$.entity.unRegisteredAt").value(now.toString()));
+
+		then(accountService).should(times(1)).deleteAccount(anyLong(), anyString());
+	}
+
+	@ParameterizedTest
+	@MethodSource("FailedResponseProvider")
+	@DisplayName("계좌해지 검증에 실패하면 보내면 응답코드 400과 함께 실패이유를 응답받아야한다.")
+	void delete_exception(RuntimeException e, String fieldName) throws Exception {
+
+		given(accountService.createAccount(anyLong(), anyLong()))
+			.willThrow(e);
+		CreateAccountRequest invalidCreateRequest = new CreateAccountRequest(131L, 990L);
+		//expect
+		mockMvc.perform(post("/account")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(invalidCreateRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons." + fieldName).value(e.getMessage()));
+
+		then(accountService).should(times(1)).createAccount(anyLong(), anyLong());
 
 	}
+
+	public static Stream<Arguments> FailedResponseProvider() {
+		return Stream.of(
+			Arguments.of(new AccountAlreadyUnregisteredException("이미 해지된 계좌번호 입니다."), "account"),
+			Arguments.of(new AccountHasBalanceException("해지하려는 계좌에 잔액이 존재합니다."), "account"),
+			Arguments.of(new AccountNotFoundException("해당 계좌가 존재하지 않습니다."), "account"),
+			Arguments.of(new UserNotFoundException("해당 사용자가 존재하지 않습니다."), "userId"),
+			Arguments.of(new UserAccountUnMatchException("사용자와 계좌의 소유주가 다릅니다."), "account")
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("invalidRequestProvider")
+	@DisplayName("유효하지 않는 데이터를 요청으로 보내면 응답코드 400과 함께 실패이유를 응답 받아야한다.")
+	void delete_unValid(DeleteAccountRequest invalidRequest, String fieldName,String reasons) throws Exception {
+		//expect
+		mockMvc.perform(delete("/account")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(invalidRequest)))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons." + fieldName).value(reasons));
+	}
+
+	public static Stream<Arguments> invalidRequestProvider() {
+		return Stream.of(
+			Arguments.of(new DeleteAccountRequest(-1L, "1111111111"), "userId", "아이디는 1 이상 이여야 합니다."),
+			Arguments.of(new DeleteAccountRequest(1L, "123456789"), "accountNumber", "계좌번호는 10자리여야합니다."),
+			Arguments.of(new DeleteAccountRequest(1L, "12345678901"), "accountNumber", "계좌번호는 10자리여야합니다.")
+		);
+	}
+
 }
