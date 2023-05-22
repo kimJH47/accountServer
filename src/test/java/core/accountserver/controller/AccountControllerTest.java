@@ -206,7 +206,7 @@ class AccountControllerTest {
 	@ParameterizedTest
 	@MethodSource("invalidRequestProvider")
 	@DisplayName("유효하지 않는 데이터를 요청으로 보내면 응답코드 400과 함께 실패이유를 응답 받아야한다.")
-	void delete_unValid(DeleteAccountRequest invalidRequest, String fieldName, String reasons) throws Exception {
+	void delete_invalid(DeleteAccountRequest invalidRequest, String fieldName, String reasons) throws Exception {
 		//expect
 		mockMvc.perform(delete("/account")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -223,6 +223,24 @@ class AccountControllerTest {
 			Arguments.of(new DeleteAccountRequest(1L, "123456789"), "accountNumber", "계좌번호는 10자리여야합니다."),
 			Arguments.of(new DeleteAccountRequest(1L, "12345678901"), "accountNumber", "계좌번호는 10자리여야합니다.")
 		);
+	}
+
+	@Test
+	@DisplayName("유효하지 않는 데이터가 여러개 일시 응답코드 400과 함께 모든 실패이유를 응답 받아야한다.")
+	void delete_invalidAll() throws Exception {
+	    //expect
+		DeleteAccountRequest invalid = new DeleteAccountRequest(-1L, "10000000011");
+		//expect
+		mockMvc.perform(delete("/account")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(invalid)))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons.userId").value("아이디는 1 이상 이여야 합니다."))
+			.andExpect(jsonPath("$.reasons.accountNumber").value("계좌번호는 10자리여야합니다."));
+
+
 	}
 
 	@Test
@@ -266,7 +284,7 @@ class AccountControllerTest {
 	}
 
 	@Test
-	@DisplayName(" 존재하지 않는 계좌번호의 User id 를 요청으로 보내면 응답코드 400과 함깨 실패이유를 응답 받아야한다.")
+	@DisplayName("존재하지 않는 계좌번호의 User id 를 요청으로 보내면 응답코드 400과 함깨 실패이유를 응답 받아야한다.")
 	void find_notFoundAccount() throws Exception {
 		//given
 		given(accountService.findAccountByUserId(anyLong()))
