@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.dto.request.CreateAccountRequest;
 import core.accountserver.dto.response.CreateAccountResponse;
+import core.accountserver.exception.user.MaxAccountPerUserException;
 import core.accountserver.exception.user.UserNotFoundException;
 import core.accountserver.repository.AccountRepository;
 import core.accountserver.repository.AccountUserRepository;
@@ -124,4 +125,23 @@ class AccountControllerTest {
 
 	}
 
+	@Test
+	@DisplayName("계좌가 이미 10개가 존재 할시  응답코드 400과 함께 실패 메세지가 응답되어야한다.")
+	void create_maxAccountPerUserException() throws Exception {
+		//given
+		given(accountService.createAccount(anyLong(), anyLong()))
+			.willThrow(new MaxAccountPerUserException("계좌가 이미 최대 갯수만큼 존재합니다."));
+		CreateAccountRequest invalidCreateRequest = new CreateAccountRequest(131L, 990L);
+
+		//expect
+		mockMvc.perform(post("/account")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(invalidCreateRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons.account").value("계좌가 이미 최대 갯수만큼 존재합니다."));
+
+		then(accountService).should(times(1)).createAccount(anyLong(), anyLong());
+
+	}
 }
