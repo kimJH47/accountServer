@@ -35,6 +35,11 @@ public class Account extends TimeStampedEntity {
 	private LocalDateTime registerAt;
 	private LocalDateTime unRegisteredAt;
 
+	public void unRegistered() {
+		unRegisteredAt = LocalDateTime.now();
+		accountStatus = AccountStatus.UNREGISTERED;
+	}
+
 	public static Account create(
 		AccountUser accountUser, String accountNumber, long initialBalance, AccountStatus accountStatus) {
 		return Account.builder()
