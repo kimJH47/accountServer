@@ -20,6 +20,7 @@ import core.accountserver.domain.account.Account;
 import core.accountserver.domain.account.AccountStatus;
 import core.accountserver.domain.transaction.Transaction;
 import core.accountserver.dto.response.transaction.CancelBalanceResponse;
+import core.accountserver.dto.response.transaction.TransactionSearchResponse;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.account.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.account.AccountExceedBalanceException;
@@ -370,6 +371,54 @@ class TransactionServiceTest {
 
 		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
 		then(transactionRepository).should(times(1)).findByTransactionId(anyString());
+
+	}
+
+	@Test
+	@DisplayName("실패한 거래내역을 저장해야한다.")
+	void save_failed_transaction() {
+		//given
+		String accountNumber = "1112111111";
+		long amount = 100L;
+
+		AccountUser user = createAccountUser(1L, "kim");
+		LocalDateTime now = LocalDateTime.now();
+		Account account = new Account(1L, user, accountNumber, AccountStatus.IN_USE, 1000L, now, now);
+
+		given(accountRepository.findByAccountNumber(anyString()))
+			.willReturn(Optional.of(account));
+		given(transactionRepository.save(any())).willReturn(any(Transaction.class));
+
+		//when
+		transactionService.saveFailedTransaction(accountNumber, amount, USE);
+
+		//then
+		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
+		then(transactionRepository).should(times(1)).save(any(Transaction.class));
+
+	}
+
+	@Test
+	@DisplayName("거래조회 시 해당하는 response 가 응답되어야한다.")
+	void search() {
+		//given
+		String accountNumber = "1112111111";
+		AccountUser user = createAccountUser(1L, "kim");
+		LocalDateTime now = LocalDateTime.now();
+		Account account = new Account(1L, user, accountNumber, AccountStatus.IN_USE, 1000L, now, now);
+		Transaction transaction = Transaction.createSuccessTransaction(account, 100L, USE);
+		String transactionId = transaction.getTransactionId();
+		given(transactionRepository.findByTransactionId(anyString())).willReturn(Optional.of(transaction));
+
+		//when
+		TransactionSearchResponse actual = transactionService.findByTransactionId(transactionId);
+
+		//then
+		assertThat(actual.getTransactionId()).isEqualTo(transactionId);
+		assertThat(actual.getTransactionResult()).isEqualTo(SUCCESS);
+		assertThat(actual.getAccountNumber()).isEqualTo(accountNumber);
+		assertThat(actual.getAmount()).isEqualTo(100L);
+		assertThat(actual.getTransactionType()).isEqualTo(USE);
 
 	}
 
