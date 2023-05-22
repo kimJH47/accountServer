@@ -44,7 +44,7 @@ public class AccountService {
 
 	private void validAccountCount(AccountUser accountUser) {
 		if (accountRepository.countByAccountUser(accountUser) >= MAX_ACCOUNT_COUNT) {
-			throw new MaxAccountPerUserException("계좌가 이미 최대 갯수만큼 존재합니다");
+			throw new MaxAccountPerUserException("계좌가 이미 최대 갯수만큼 존재합니다.");
 		}
 	}
 }
