@@ -50,6 +50,10 @@ public class Account extends TimeStampedEntity {
 		balance -= amount;
 	}
 
+	public void cancelBalance(Long amount) {
+		balance += amount;
+	}
+
 	public boolean isUnRegistered() {
 		return accountStatus.equals(UNREGISTERED);
 	}
