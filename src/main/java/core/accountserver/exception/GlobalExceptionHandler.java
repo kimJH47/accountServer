@@ -35,4 +35,9 @@ public class GlobalExceptionHandler {
 		return Response.createBadRequestResponse(BAD_REQUEST, "account", e.getMessage());
 	}
 
+	@ExceptionHandler(TransactionFailedException.class)
+	public ResponseEntity<Response> handle(TransactionFailedException e) {
+		return Response.createBadRequestResponse(BAD_REQUEST, "transaction", e.getMessage());
+	}
+
 }
