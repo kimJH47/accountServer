@@ -11,6 +11,7 @@ import core.accountserver.exception.account.AccountHasBalanceException;
 import core.accountserver.exception.account.AccountNotFoundException;
 import core.accountserver.exception.transaction.TransactionFailedException;
 import core.accountserver.exception.account.UserAccountUnMatchException;
+import core.accountserver.exception.transaction.TransactionNotFoundException;
 import core.accountserver.exception.user.MaxAccountPerUserException;
 import core.accountserver.exception.user.UserNotFoundException;
 
@@ -45,4 +46,8 @@ public class GlobalExceptionHandler {
 		return Response.createBadRequest(BAD_REQUEST, "transaction", e.getMessage());
 	}
 
+	@ExceptionHandler(TransactionNotFoundException.class)
+	public ResponseEntity<Response> handle(TransactionNotFoundException e) {
+		return Response.createBadRequest(BAD_REQUEST, "transactionId", e.getMessage());
+	}
 }
