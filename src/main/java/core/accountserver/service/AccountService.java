@@ -3,6 +3,7 @@ package core.accountserver.service;
 import static core.accountserver.domain.account.AccountStatus.*;
 import static core.accountserver.policy.AccountConstant.*;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
+import core.accountserver.dto.response.AccountSearchResponse;
 import core.accountserver.dto.response.CreateAccountResponse;
 import core.accountserver.dto.response.DeleteAccountResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
@@ -81,5 +83,9 @@ public class AccountService {
 		if (account.getBalance() > 0) {
 			throw new AccountHasBalanceException("해지하려는 계좌에 잔액이 존재합니다.");
 		}
+	}
+
+	public List<AccountSearchResponse> findAccountByUserId(long id) {
+		return null;
 	}
 }

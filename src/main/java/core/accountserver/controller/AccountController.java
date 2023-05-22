@@ -4,8 +4,10 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import core.accountserver.dto.request.CreateAccountRequest;
@@ -36,4 +38,8 @@ public class AccountController {
 		return Response.createSuccessResponse("성공적으로 계좌가 해지 되었습니다.", response);
 	}
 
+	@GetMapping("/account")
+	public ResponseEntity<Response> findByAccountUserId(@RequestParam("user_id") long id) {
+		return Response.createSuccessResponse("성공적으로 계좌가 조회되었습니다.", accountService.findAccountByUserId(id));
+	}
 }
