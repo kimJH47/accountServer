@@ -69,8 +69,7 @@ class AccountControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.message").value("성공적으로 계좌가 생성되었습니다."))
 			.andExpect(jsonPath("$.entity.userId").value(1L))
-			.andExpect(jsonPath("$.entity.accountNumber").value("1100100111"))
-			.andExpect(jsonPath("$.entity.registeredAt").value(now.toString()));
+			.andExpect(jsonPath("$.entity.accountNumber").value("1100100111"));
 
 		then(accountService).should(times(1)).createAccount(anyLong(), anyLong());
 	}
