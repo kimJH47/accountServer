@@ -46,7 +46,6 @@ class AccountServiceTest {
 	@BeforeEach
 	void setUp() {
 		accountService = new AccountService(accountRepository, accountUserRepository, fixedAccountNumberGenerator);
-
 	}
 
 	@Test
