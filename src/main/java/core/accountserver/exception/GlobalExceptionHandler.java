@@ -10,14 +10,14 @@ import core.accountserver.exception.user.UserNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
+	private static final String BAD_REQUEST = "잘못된 요청입니다.";
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Response> handle(MethodArgumentNotValidException e) {
-		return Response.createBadRequestResponse("잘못된 요청입니다.", e);
+		return Response.createBadRequestResponse(BAD_REQUEST, e);
 	}
 
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<Response> handle(UserNotFoundException e) {
-		return Response.createBadRequestResponse("잘못된 요청입니다.", "userId", e.getMessage());
+		return Response.createBadRequestResponse(BAD_REQUEST, "userId", e.getMessage());
 	}
 }
