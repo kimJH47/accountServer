@@ -33,7 +33,7 @@ public class AccountController {
 	public ResponseEntity<Response> deleteAccount(@RequestBody @Valid DeleteAccountRequest deleteAccountRequest) {
 		DeleteAccountResponse response = accountService.deleteAccount(deleteAccountRequest.getUserId(),
 			deleteAccountRequest.getAccountNumber());
-		return Response.createSuccessResponse("성공적으로 계좌가 삭제되었습니다.", response);
+		return Response.createSuccessResponse("성공적으로 계좌가 해지 되었습니다.", response);
 	}
 
 }
