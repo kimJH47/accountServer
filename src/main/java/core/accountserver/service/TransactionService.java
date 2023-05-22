@@ -13,6 +13,7 @@ import core.accountserver.domain.account.Account;
 import core.accountserver.domain.transaction.Transaction;
 import core.accountserver.domain.transaction.TransactionType;
 import core.accountserver.dto.response.transaction.CancelBalanceResponse;
+import core.accountserver.dto.response.transaction.TransactionSearchResponse;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.account.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.account.AccountExceedBalanceException;
@@ -126,5 +127,9 @@ public class TransactionService {
 		if (account.isUnRegistered()) {
 			throw new AccountAlreadyUnregisteredException("이미 해지된 계좌번호 입니다.");
 		}
+	}
+
+	public TransactionSearchResponse findByTransactionId(String transactionId) {
+		return null;
 	}
 }

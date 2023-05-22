@@ -5,6 +5,8 @@ import static core.accountserver.domain.transaction.TransactionType.*;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,5 +48,11 @@ public class TransactionController {
 			transactionService.saveFailedTransaction(request.getAccountNumber(), request.getAmount(), CANCEL);
 			throw new TransactionFailedException(e.getMessage());
 		}
+	}
+
+	@GetMapping("/transaction/{transactionId}")
+	public ResponseEntity<Response> findOne(@PathVariable String transactionId) {
+		return Response.createSuccess("성공적으로 조회가 완료되었습니다.",
+			transactionService.findByTransactionId(transactionId));
 	}
 }
