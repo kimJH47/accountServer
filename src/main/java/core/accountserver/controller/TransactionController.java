@@ -29,7 +29,7 @@ public class TransactionController {
 				request.getAccountNumber(), request.getAmount());
 			return Response.createSuccess("성공적으로 거래가 완료 되었습니다.", response);
 		} catch (Exception e) {
-			transactionService.saveFailedTransaction(request.getAccountNumber(), request.getAmount());
+			transactionService.saveFailedTransaction(request.getAccountNumber(), request.getAmount(), USE);
 			throw new TransactionFailedException(e.getMessage());
 		}
 	}

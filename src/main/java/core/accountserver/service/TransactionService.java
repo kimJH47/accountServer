@@ -41,7 +41,8 @@ public class TransactionService {
 		validUseBalance(accountUser, account, amount);
 
 		account.useBalance(amount);
-		Transaction transaction = transactionRepository.save(Transaction.createSuccessTransaction(account, amount));
+		Transaction transaction = transactionRepository.save(
+			Transaction.createSuccessTransaction(account, amount, USE));
 
 		return UseBalanceResponse.builder()
 			.accountNumber(accountNumber)
