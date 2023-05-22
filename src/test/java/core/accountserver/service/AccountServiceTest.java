@@ -14,11 +14,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
-import core.accountserver.exception.user.MaxAccountPerUserException;
-import core.accountserver.generator.AccountNumberGenerator;
 import core.accountserver.domain.account.AccountStatus;
 import core.accountserver.dto.response.CreateAccountResponse;
+import core.accountserver.dto.response.DeleteAccountResponse;
+import core.accountserver.exception.AccountAlreadyUnregisteredException;
+import core.accountserver.exception.AccountHasBalanceException;
+import core.accountserver.exception.AccountNotFoundException;
+import core.accountserver.exception.UserAccountUnMatchException;
+import core.accountserver.exception.user.MaxAccountPerUserException;
 import core.accountserver.exception.user.UserNotFoundException;
+import core.accountserver.generator.AccountNumberGenerator;
 import core.accountserver.repository.AccountRepository;
 import core.accountserver.repository.AccountUserRepository;
 
@@ -79,7 +84,7 @@ class AccountServiceTest {
 
 	@Test
 	@DisplayName("계좌 생성시 계좌가 10개를 초과 할 때 MaxAccountPerUserException 이 던져진다.")
-	void create_max_account(){
+	void create_max_account() {
 		//given
 		long userId = 1L;
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(createAccountUser(userId, "user")));
@@ -90,10 +95,107 @@ class AccountServiceTest {
 			.isInstanceOf(MaxAccountPerUserException.class)
 			.hasMessage("계좌가 이미 최대 갯수만큼 존재합니다.");
 
+	}
+
+	@Test
+	@DisplayName("userId 와 accountNumber 를 받아서 계좌해지 후 response 를 반환해야한다.")
+	void delete() throws Exception {
+		//given
+
+		long userId = 1L;
+		long initialBalance = 0L;
+		AccountUser accountUser = createAccountUser(userId, "user1");
+		Account account = Account.create(accountUser, fixedAccountNumberGenerator.generator(userId), initialBalance,
+			AccountStatus.IN_USE);
+
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(accountUser));
+		given(accountRepository.findByAccountNumber(anyString())).willReturn(Optional.of(account));
+
+		//when
+		DeleteAccountResponse actual = accountService.deleteAccount(userId, "1111111111");
+		//then
+		assertThat(actual.getAccountNumber()).isEqualTo("1111111111");
+		assertThat(account.getAccountStatus()).isEqualTo(AccountStatus.UNREGISTERED);
+
+		then(accountRepository).should(times(0)).findById(anyLong());
+		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
 
 	}
 
-	private static AccountUser createAccountUser(long userId, String name) {
+	@Test
+	@DisplayName("계좌해지시 유저가 존재하지 않으면 UserNotFoundException 예외를 던져야한다.")
+	void delete_userNotFound() throws Exception {
+		//given
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
+		//expect
+		assertThatThrownBy(() -> accountService.deleteAccount(1L, "1111111111"))
+			.isInstanceOf(UserNotFoundException.class)
+			.hasMessage("해당 사용자가 존재하지 않습니다.");
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+	}
+
+	@Test
+	@DisplayName("계좌해지 시 계좌가 존재하지 않으면 AccountNotFoundException 예외를 던져야한다.")
+	void delete_accountNotFound() throws Exception {
+		//given
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(createAccountUser(1L, "user")));
+		given(accountRepository.findByAccountNumber(anyString())).willReturn(Optional.empty());
+		//expect
+		assertThatThrownBy(() -> accountService.deleteAccount(1L, "1234567890"))
+			.isInstanceOf(AccountNotFoundException.class)
+			.hasMessage("해당 계좌가 존재하지 않습니다.");
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
+	}
+
+	@Test
+	@DisplayName("계좌에 잔액이 존재하면 AccountHasBalanceException 예외를 던져야한다.")
+	void delete_hasBalance() {
+		AccountUser user = createAccountUser(1L, "user");
+		Account account = Account.create(user, "1234567890", 1000,
+			AccountStatus.IN_USE);
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
+		given(accountRepository.findByAccountNumber(anyString())).willReturn(Optional.of(account));
+		//expect
+		assertThatThrownBy(() -> accountService.deleteAccount(1L, "1234567890"))
+			.isInstanceOf(AccountHasBalanceException.class)
+			.hasMessage("해지하려는 계좌에 잔액이 존재합니다.");
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
+	}
+
+	@Test
+	@DisplayName("사용자와 계좌 소유주가 다를 때 UserAccountUnMatchException 를 던져야한다.")
+	void delete_unMatch() {
+		AccountUser user = createAccountUser(1L, "user");
+		Account account = Account.create(createAccountUser(2L, "user2"), "1234567890", 0,
+			AccountStatus.IN_USE);
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
+		given(accountRepository.findByAccountNumber(anyString())).willReturn(Optional.of(account));
+		//expect
+		assertThatThrownBy(() -> accountService.deleteAccount(1L, "1234567890"))
+			.isInstanceOf(UserAccountUnMatchException.class)
+			.hasMessage("사용자와 계좌의 소유주가 다릅니다.");
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
+	}
+
+	@Test
+	@DisplayName("이미 해지된 계좌일 때  AccountAlreadyUnregisteredException 를 던져야한다.")
+	void delete_alreadyUnregistered() {
+		AccountUser user = createAccountUser(1L, "user");
+		Account account = Account.create(user, "1234567890", 0L, AccountStatus.UNREGISTERED);
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
+		given(accountRepository.findByAccountNumber(anyString())).willReturn(Optional.of(account));
+		//expect
+		assertThatThrownBy(() -> accountService.deleteAccount(1L, "1234567890"))
+			.isInstanceOf(AccountAlreadyUnregisteredException.class)
+			.hasMessage("이미 해지된 계좌번호 입니다.");
+		then(accountUserRepository).should(times(1)).findById(anyLong());
+		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
+	}
+
+	private AccountUser createAccountUser(long userId, String name) {
 		return new AccountUser(userId, name);
 	}
 
