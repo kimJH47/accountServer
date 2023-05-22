@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import core.accountserver.aop.AccountLock;
 import core.accountserver.dto.request.transaction.CancelBalanceRequest;
 import core.accountserver.dto.request.transaction.UseBalanceRequest;
 import core.accountserver.dto.response.Response;
@@ -27,6 +28,7 @@ public class TransactionController {
 	private final TransactionService transactionService;
 
 	@PostMapping("/transaction/use")
+	@AccountLock
 	public ResponseEntity<Response> useBalance(@Valid @RequestBody UseBalanceRequest request) {
 		try {
 			UseBalanceResponse response = transactionService.useBalance(request.getUserId(),
@@ -39,6 +41,7 @@ public class TransactionController {
 	}
 
 	@PostMapping("/transaction/cancel")
+	@AccountLock
 	public ResponseEntity<Response> cancelBalance(@Valid @RequestBody CancelBalanceRequest request) {
 		try {
 			CancelBalanceResponse response = transactionService.cancelBalance(request.getTransactionId(),
