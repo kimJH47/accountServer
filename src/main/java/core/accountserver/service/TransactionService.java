@@ -130,6 +130,15 @@ public class TransactionService {
 	}
 
 	public TransactionSearchResponse findByTransactionId(String transactionId) {
-		return null;
+		Transaction transaction = transactionRepository.findByTransactionId(transactionId)
+			.orElseThrow(() -> new TransactionNotFoundException("해당 거래내역이 존재하지 않습니다."));
+		return TransactionSearchResponse.builder()
+			.accountNumber(transaction.getAccount().getAccountNumber())
+			.transactionType(transaction.getTransactionType())
+			.transactionResult(transaction.getTransactionResult())
+			.transactionId(transaction.getTransactionId())
+			.amount(transaction.getAmount())
+			.transactedAt(transaction.getTransactedAt())
+			.build();
 	}
 }

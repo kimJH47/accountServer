@@ -62,22 +62,26 @@ class TransactionServiceTest {
 		//given
 		long userId = 10L;
 		String accountNumber = "1000000001";
+		long balance = 1000L;
+		long amount = 100L;
 		AccountUser user = createAccountUser(userId, "kim");
-		Account account = createAccount(user, accountNumber, 1000L, AccountStatus.IN_USE);
-		Transaction successTransaction = Transaction.createSuccessTransaction(account, 100L, USE);
+
+		Account account = createAccount(user, accountNumber, balance, AccountStatus.IN_USE);
+		Transaction successTransaction = Transaction.createSuccessTransaction(account, amount, USE);
 
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
 		given(accountRepository.findByAccountNumber(accountNumber)).willReturn(Optional.of(account));
 		given(transactionRepository.save(any(Transaction.class))).willReturn(successTransaction);
 
 		//when
-		UseBalanceResponse actual = transactionService.useBalance(userId, accountNumber, 100L);
+		UseBalanceResponse actual = transactionService.useBalance(userId, accountNumber, amount);
 
 		//then
 		assertThat(actual.getTransactedAt()).isEqualTo(successTransaction.getTransactedAt().toString());
 		assertThat(actual.getTransactionId()).isEqualTo(successTransaction.getTransactionId());
 		assertThat(actual.getTransactionResult()).isEqualTo(SUCCESS);
-		assertThat(actual.getAmount()).isEqualTo(100L);
+		assertThat(actual.getAmount()).isEqualTo(amount);
+		assertThat(account.getBalance()).isEqualTo(balance - amount);
 
 		then(accountUserRepository).should(times(1)).findById(anyLong());
 		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
@@ -183,9 +187,10 @@ class TransactionServiceTest {
 		//given
 		String accountNumber = "1100111111";
 		long amount = 100L;
+		long balance = 1000L;
 
 		AccountUser user = createAccountUser(1L, "kim");
-		Account account = createAccount(user, accountNumber, 1000L, AccountStatus.IN_USE);
+		Account account = createAccount(user, accountNumber, balance, AccountStatus.IN_USE);
 		Transaction successTransaction = Transaction.createSuccessTransaction(account, amount, USE);
 		Transaction cancelTransaction = Transaction.createSuccessTransaction(account, amount, CANCEL);
 
@@ -202,6 +207,7 @@ class TransactionServiceTest {
 		assertThat(actual.getTransactionResult()).isEqualTo(SUCCESS);
 		assertThat(actual.getAccountNumber()).isEqualTo(accountNumber);
 		assertThat(actual.getAmount()).isEqualTo(amount);
+		assertThat(account.getBalance()).isEqualTo(balance + amount);
 
 		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
 		then(transactionRepository).should(times(1)).save(any(Transaction.class));
@@ -239,22 +245,6 @@ class TransactionServiceTest {
 		then(accountRepository).should(times(1)).findByAccountNumber(anyString());
 		then(transactionRepository).should(times(1)).findByTransactionId(anyString());
 	}
-
-	// 	if (!Objects.equals(account.getId(), transaction.getAccount().getId())) {
-	// 	throw new AccountTransactionUnMatchException("해당계좌에서 발생된 거래가 아닙니다.");
-	// }
-	// 	if (transaction.isCancel()) {
-	// 	throw new TransactionAlreadyCancelException("이미 취소된 거래입니다.");
-	// }
-	// 	if (transaction.isFailed()) {
-	// 	throw new TransactionResultFailedException("해당 거래는 실패한 거래입니다.");
-	// }
-	// 	if (transaction.isValidTransactionDate()) {
-	// 	throw new TooOldOrderToCancelException("취소 가능한 거래 날짜가 지났습니다.");
-	// }
-	// 	if (!transaction.isSameAmount(amount)) {
-	// 	throw new CancelMustFullyException("취소금액은 거래된 금액과 일치 해야 합니다.");
-	// }
 
 	@Test
 	@DisplayName("거래취소 시 해지된 계좌면 AccountAlreadyUnregisteredException 을 던져야한다.")
