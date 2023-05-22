@@ -28,4 +28,10 @@ public class Response {
 			.body(failedResponse);
 	}
 
+	public static ResponseEntity<Response> createBadRequestResponse(String message,String fieldName,String reasons) {
+		FailedResponse failedResponse = new FailedResponse(message);
+		failedResponse.input(fieldName,reasons);
+		return ResponseEntity.badRequest()
+			.body(failedResponse);
+	}
 }
