@@ -1,6 +1,7 @@
 package core.accountserver.controller;
 
 import static core.accountserver.domain.transaction.TransactionResult.*;
+import static core.accountserver.domain.transaction.TransactionType.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,6 +27,7 @@ import core.accountserver.domain.transaction.TransactionType;
 import core.accountserver.dto.request.transaction.CancelBalanceRequest;
 import core.accountserver.dto.request.transaction.UseBalanceRequest;
 import core.accountserver.dto.response.transaction.CancelBalanceResponse;
+import core.accountserver.dto.response.transaction.TransactionSearchResponse;
 import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.account.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.account.AccountExceedBalanceException;
@@ -224,6 +226,43 @@ class TransactionControllerTest {
 			.saveFailedTransaction(anyString(), anyLong(), any(TransactionType.class));
 	}
 
+	@Test
+	@DisplayName("/transaction/{transactionId} GET 요청 할 시 응답코드 200과 함께 해당하는 거래내역이 응답되어야한다.")
+	void search() throws Exception {
+	    //given
+		TransactionSearchResponse response = new TransactionSearchResponse("1111111111", CANCEL, SUCCESS,
+			"transactionId", 100L,
+			LocalDateTime.now());
+		given(transactionService.findByTransactionId(anyString()))
+			.willReturn(response);
+
+	    //expect
+		mockMvc.perform(get("/transaction/transactionId"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("성공적으로 조회가 완료되었습니다."))
+			.andExpect(jsonPath("$.entity.transactionId").value(response.getTransactionId()))
+			.andExpect(jsonPath("$.entity.accountNumber").value(response.getAccountNumber()))
+			.andExpect(jsonPath("$.entity.amount").value(response.getAmount()))
+			.andExpect(jsonPath("$.entity.transactionResult").value(response.getTransactionResult().toString()))
+			.andExpect(jsonPath("$.entity.transactionType").value(response.getTransactionType().toString()));
+
+		then(transactionService).should(times(1)).findByTransactionId(anyString());
+	}
+
+	@Test
+	@DisplayName("유효하지않는 transactionId 를 요청으로 보낼시 응답코드 400과 함께 이유를 응답받아야한다.")
+	void search_transactionNotFound() throws Exception {
+	    //given
+		given(transactionService.findByTransactionId(anyString())).willThrow(
+			new TransactionNotFoundException("해당 거래내역이 존재하지 않습니다."));
+
+	    //expect
+		mockMvc.perform(get("/transaction/transactionId"))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons.transactionId").value("해당 거래내역이 존재하지 않습니다."));
+
+	}
 	public static Stream<Arguments> invalidCancelTransactionProvider() {
 		return Stream.of(
 			Arguments.of(new AccountNotFoundException("해당 계좌가 존재하지 않습니다.")),
