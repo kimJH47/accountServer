@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.dto.request.CreateAccountRequest;
 import core.accountserver.dto.response.CreateAccountResponse;
+import core.accountserver.exception.user.UserNotFoundException;
 import core.accountserver.repository.AccountRepository;
 import core.accountserver.repository.AccountUserRepository;
 import core.accountserver.service.AccountService;
@@ -49,9 +50,8 @@ class AccountControllerTest {
 		CreateAccountRequest request = new CreateAccountRequest(1L, 10000L);
 
 		LocalDateTime now = LocalDateTime.now();
-		willReturn(new CreateAccountResponse(1L, "1100100111", now))
-			.given(accountService)
-			.createAccount(anyLong(), anyLong());
+		given(accountService.createAccount(anyLong(), anyLong()))
+			.willReturn(new CreateAccountResponse(1L, "1100100111", now));
 
 		//expect
 		mockMvc.perform(post("/account")
@@ -92,7 +92,7 @@ class AccountControllerTest {
 	@DisplayName("유효하지않은 데이터가 여러개 응답코드 400과 함깨 실패한 이유 전부가 응답되어야한다.")
 	void create_request_exceptionAll() throws Exception {
 		//given
-		CreateAccountRequest invalidCreateRequest = new CreateAccountRequest(-1L,99L);
+		CreateAccountRequest invalidCreateRequest = new CreateAccountRequest(-1L, 99L);
 		//expect
 		mockMvc.perform(post("/account")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -102,6 +102,24 @@ class AccountControllerTest {
 			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
 			.andExpect(jsonPath("$.reasons.userId").value("아이디는 1 이상 이여야 합니다."))
 			.andExpect(jsonPath("$.reasons.initialBalance").value("금액은 최소 100 이상 존재해야 합니다."));
+	}
+
+	@Test
+	@DisplayName("사용자가 존재하지 않을시 응답코드 400과 함께 실패 메세지가 응답되어야한다.")
+	void create_userNotFoundException() throws Exception {
+		//given
+		given(accountService.createAccount(anyLong(), anyLong()))
+			.willThrow(new UserNotFoundException("해당 사용자가 존재하지 않습니다."));
+		CreateAccountRequest invalidCreateRequest = new CreateAccountRequest(131L, 990L);
+
+		//expect
+		mockMvc.perform(post("/account")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(invalidCreateRequest)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.reasons.userId").value("해당 사용자가 존재하지 않습니다."));
+
 	}
 
 }
