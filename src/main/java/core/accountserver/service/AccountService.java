@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
 import core.accountserver.dto.response.CreateAccountResponse;
+import core.accountserver.dto.response.DeleteAccountResponse;
 import core.accountserver.exception.user.MaxAccountPerUserException;
 import core.accountserver.exception.user.UserNotFoundException;
 import core.accountserver.generator.AccountNumberGenerator;
@@ -46,5 +47,9 @@ public class AccountService {
 		if (accountRepository.countByAccountUser(accountUser) >= MAX_ACCOUNT_COUNT) {
 			throw new MaxAccountPerUserException("계좌가 이미 최대 갯수만큼 존재합니다.");
 		}
+	}
+
+	public DeleteAccountResponse deleteAccount(Long userId, String accountNumber) {
+		return null;
 	}
 }
