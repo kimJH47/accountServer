@@ -422,6 +422,20 @@ class TransactionServiceTest {
 
 	}
 
+	@Test
+	@DisplayName("거래조회 시 거래내역이 존재하지 않으면 TransactionNotFoundException 을 던져야한다.")
+	void search_transactionNotFound() {
+		//given
+		given(transactionRepository.findByTransactionId(anyString())).willReturn(Optional.empty());
+
+	    //expect
+		assertThatThrownBy(() -> transactionService.findByTransactionId("transactionId"))
+			.isInstanceOf(TransactionNotFoundException.class);
+		then(transactionRepository).should(times(1)).findByTransactionId(anyString());
+
+
+	}
+
 	private AccountUser createAccountUser(long userId, String name) {
 		return new AccountUser(userId, name);
 	}
