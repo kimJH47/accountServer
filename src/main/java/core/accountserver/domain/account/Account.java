@@ -1,5 +1,7 @@
 package core.accountserver.domain.account;
 
+import static core.accountserver.domain.account.AccountStatus.*;
+
 import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
@@ -38,7 +40,18 @@ public class Account extends TimeStampedEntity {
 
 	public void unRegistered() {
 		unRegisteredAt = LocalDateTime.now();
-		accountStatus = AccountStatus.UNREGISTERED;
+		accountStatus = UNREGISTERED;
+	}
+
+	public void userBalance(Long amount) {
+		if (amount > balance) {
+			throw new AccountExceedBalanceException("거래금액이 계좌 잔액보다 큽니다.");
+		}
+		balance -= amount;
+	}
+
+	public boolean isUnRegistered() {
+		return accountStatus.equals(UNREGISTERED);
 	}
 
 	public static Account create(
@@ -50,12 +63,5 @@ public class Account extends TimeStampedEntity {
 			.balance(initialBalance)
 			.registerAt(LocalDateTime.now())
 			.build();
-	}
-
-	public void userBalance(Long amount) {
-		if (amount > balance) {
-			throw new AccountExceedBalanceException("거래금액이 계좌 잔액보다 큽니다.");
-		}
-		balance-= amount;
 	}
 }
