@@ -43,7 +43,7 @@ public class Account extends TimeStampedEntity {
 		accountStatus = UNREGISTERED;
 	}
 
-	public void userBalance(Long amount) {
+	public void useBalance(Long amount) {
 		if (amount > balance) {
 			throw new AccountExceedBalanceException("거래금액이 계좌 잔액보다 큽니다.");
 		}
