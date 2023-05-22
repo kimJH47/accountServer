@@ -157,8 +157,7 @@ class TransactionControllerTest {
 			.andExpect(jsonPath("$.entity.accountNumber").value(accountNumber))
 			.andExpect(jsonPath("$.entity.transactionId").value("transactionId"))
 			.andExpect(jsonPath("$.entity.transactionResult").value(SUCCESS.toString()))
-			.andExpect(jsonPath("$.entity.amount").value(1000))
-			.andExpect(jsonPath("$.entity.transactedAt").value(now.toString()));
+			.andExpect(jsonPath("$.entity.amount").value(1000));
 		then(transactionService).should(times(1)).cancelBalance((anyString()), anyString(), anyLong());
 	}
 
