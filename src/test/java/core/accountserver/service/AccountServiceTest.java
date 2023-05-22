@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
+import core.accountserver.exception.user.MaxAccountPerUserException;
 import core.accountserver.generator.AccountNumberGenerator;
 import core.accountserver.domain.account.AccountStatus;
 import core.accountserver.dto.response.CreateAccountResponse;
@@ -40,11 +41,11 @@ class AccountServiceTest {
 
 	@Test
 	@DisplayName("user Id 와 초기금액을 받아서 account 생성 후 response 를 반환해야한다.")
-	void create(){
+	void create() {
 		//given
 		long userId = 1L;
 		long initialBalance = 2000L;
-		AccountUser accountUser = new AccountUser(userId, "user1");
+		AccountUser accountUser = createAccountUser(userId, "user1");
 		Account account = Account.create(accountUser, fixedAccountNumberGenerator.generator(userId), initialBalance,
 			AccountStatus.IN_USE);
 
@@ -65,15 +66,35 @@ class AccountServiceTest {
 	}
 
 	@Test
-	@DisplayName("계좌생성시 user id 가 존재하지 않으면 UserNotFoundException 이 던져진다. ")
-	void create_exception(){
-	    //given
+	@DisplayName("계좌생성시 user id 가 존재하지 않으면 UserNotFoundException 이 던져진다.")
+	void create_exception() {
+		//given
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
 		//expect
 		assertThatThrownBy(() -> accountService.createAccount(1L, 2000L))
 			.isInstanceOf(UserNotFoundException.class)
 			.hasMessage("해당 사용자가 존재하지 않습니다.");
 		then(accountUserRepository).should(times(1)).findById(anyLong());
+	}
+
+	@Test
+	@DisplayName("계좌 생성시 계좌가 10개를 초과 할 때 MaxAccountPerUserException 이 던져진다.")
+	void create_max_account(){
+		//given
+		long userId = 1L;
+		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(createAccountUser(userId, "user")));
+		given(accountRepository.countByAccountUser(any(AccountUser.class))).willReturn(10);
+
+		//expect
+		assertThatThrownBy(() -> accountService.createAccount(userId, 1000L))
+			.isInstanceOf(MaxAccountPerUserException.class)
+			.hasMessage("계좌가 이미 최대 갯수만큼 존재합니다.");
+
+
+	}
+
+	private static AccountUser createAccountUser(long userId, String name) {
+		return new AccountUser(userId, name);
 	}
 
 	static class FixedAccountNumberGenerator implements AccountNumberGenerator {
