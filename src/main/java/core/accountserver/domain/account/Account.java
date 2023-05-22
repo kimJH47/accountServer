@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.TimeStampedEntity;
+import core.accountserver.exception.AccountExceedBalanceException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,5 +50,12 @@ public class Account extends TimeStampedEntity {
 			.balance(initialBalance)
 			.registerAt(LocalDateTime.now())
 			.build();
+	}
+
+	public void userBalance(Long amount) {
+		if (amount > balance) {
+			throw new AccountExceedBalanceException("거래금액이 계좌 잔액보다 큽니다.");
+		}
+		balance-= amount;
 	}
 }
