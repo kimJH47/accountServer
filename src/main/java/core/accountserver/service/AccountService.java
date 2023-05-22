@@ -90,7 +90,7 @@ public class AccountService {
 	public List<AccountSearchResponse> findAccountByUserId(long userId) {
 		AccountUser accountUser = accountUserRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException("해당 사용자가 존재하지 않습니다."));
-		List<Account> accounts = accountUserRepository.findByAccountUser(accountUser);
+		List<Account> accounts = accountRepository.findByAccountUser(accountUser);
 		if (accounts.isEmpty()) {
 			throw new AccountNotFoundException("해당 계좌가 존재하지 않습니다.");
 		}

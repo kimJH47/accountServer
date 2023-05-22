@@ -1,5 +1,6 @@
 package core.accountserver.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
 	boolean existsByAccountNumber(String accountNumber);
 	Integer countByAccountUser(AccountUser accountUser);
 	Optional<Account> findByAccountNumber(String accountNumber);
+
+	List<Account> findByAccountUser(AccountUser accountUser);
 }
