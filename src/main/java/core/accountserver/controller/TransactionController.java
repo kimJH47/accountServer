@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import core.accountserver.dto.request.UserBalanceRequest;
+import core.accountserver.dto.request.transaction.UserBalanceRequest;
 import core.accountserver.dto.response.Response;
-import core.accountserver.dto.response.UserBalanceResponse;
+import core.accountserver.dto.response.transaction.UserBalanceResponse;
 import core.accountserver.exception.TransactionFailedException;
 import core.accountserver.service.TransactionService;
 import lombok.RequiredArgsConstructor;

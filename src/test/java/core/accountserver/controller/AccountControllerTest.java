@@ -22,11 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import core.accountserver.dto.request.CreateAccountRequest;
-import core.accountserver.dto.request.DeleteAccountRequest;
-import core.accountserver.dto.response.AccountSearchResponse;
-import core.accountserver.dto.response.CreateAccountResponse;
-import core.accountserver.dto.response.DeleteAccountResponse;
+import core.accountserver.dto.request.account.CreateAccountRequest;
+import core.accountserver.dto.request.account.DeleteAccountRequest;
+import core.accountserver.dto.response.account.AccountSearchResponse;
+import core.accountserver.dto.response.account.CreateAccountResponse;
+import core.accountserver.dto.response.account.DeleteAccountResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountHasBalanceException;
 import core.accountserver.exception.AccountNotFoundException;

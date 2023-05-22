@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
-import core.accountserver.dto.response.AccountSearchResponse;
-import core.accountserver.dto.response.CreateAccountResponse;
-import core.accountserver.dto.response.DeleteAccountResponse;
+import core.accountserver.dto.response.account.AccountSearchResponse;
+import core.accountserver.dto.response.account.CreateAccountResponse;
+import core.accountserver.dto.response.account.DeleteAccountResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountHasBalanceException;
 import core.accountserver.exception.AccountNotFoundException;

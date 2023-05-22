@@ -1,4 +1,4 @@
-package core.accountserver.dto.request;
+package core.accountserver.dto.request.account;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

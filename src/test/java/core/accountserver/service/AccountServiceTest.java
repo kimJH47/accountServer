@@ -19,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
 import core.accountserver.domain.account.AccountStatus;
-import core.accountserver.dto.response.AccountSearchResponse;
-import core.accountserver.dto.response.CreateAccountResponse;
-import core.accountserver.dto.response.DeleteAccountResponse;
+import core.accountserver.dto.response.account.AccountSearchResponse;
+import core.accountserver.dto.response.account.CreateAccountResponse;
+import core.accountserver.dto.response.account.DeleteAccountResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountHasBalanceException;
 import core.accountserver.exception.AccountNotFoundException;
@@ -103,7 +103,7 @@ class AccountServiceTest {
 
 	@Test
 	@DisplayName("userId 와 accountNumber 를 받아서 계좌해지 후 response 를 반환해야한다.")
-	void delete() throws Exception {
+	void delete() {
 		//given
 
 		long userId = 1L;
@@ -127,8 +127,8 @@ class AccountServiceTest {
 	}
 
 	@Test
-	@DisplayName("계좌해지시 유저가 존재하지 않으면 UserNotFoundException 예외를 던져야한다.")
-	void delete_userNotFound() throws Exception {
+	@DisplayName("계좌해지 시 유저가 존재하지 않으면 UserNotFoundException 예외를 던져야한다.")
+	void delete_userNotFound() {
 		//given
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
 		//expect
@@ -140,7 +140,7 @@ class AccountServiceTest {
 
 	@Test
 	@DisplayName("계좌해지 시 계좌가 존재하지 않으면 AccountNotFoundException 예외를 던져야한다.")
-	void delete_accountNotFound() throws Exception {
+	void delete_accountNotFound() {
 		//given
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(createAccountUser(1L, "user")));
 		given(accountRepository.findByAccountNumber(anyString())).willReturn(Optional.empty());
@@ -207,9 +207,9 @@ class AccountServiceTest {
 		AccountUser user = createAccountUser(1L, "user");
 		ArrayList<Account> accounts = new ArrayList<>();
 		LocalDateTime now = LocalDateTime.now();
-		accounts.add(new Account(1L,user,"1111111111",AccountStatus.IN_USE,1000L, now,null));
-		accounts.add(new Account(2L,user,"1111111112",AccountStatus.IN_USE,2000L, now,null));
-		accounts.add(new Account(3L,user,"1111111113",AccountStatus.IN_USE,3000L, now,null));
+		accounts.add(new Account(1L, user, "1111111111", AccountStatus.IN_USE, 1000L, now, null));
+		accounts.add(new Account(2L, user, "1111111112", AccountStatus.IN_USE, 2000L, now, null));
+		accounts.add(new Account(3L, user, "1111111113", AccountStatus.IN_USE, 3000L, now, null));
 
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(user));
 		given(accountRepository.findByAccountUser(any(AccountUser.class))).willReturn(accounts);
@@ -227,7 +227,7 @@ class AccountServiceTest {
 
 	@Test
 	@DisplayName("userId 가 존재하지 않을 시 UserNotFoundException 을 던져야한다.")
-	void find_userNotFound() throws Exception {
+	void find_userNotFound() {
 		//given
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.empty());
 		//expect
@@ -239,7 +239,7 @@ class AccountServiceTest {
 
 	@Test
 	@DisplayName("계좌가 가 존재하지 않을 시 AccountNotFoundException 을 던져야한다.")
-	void find_accountNotFound() throws Exception {
+	void find_accountNotFound() {
 		//given
 		given(accountUserRepository.findById(anyLong())).willReturn(Optional.of(createAccountUser(1L, "kim")));
 		given(accountRepository.findByAccountUser(any(AccountUser.class))).willReturn(Collections.emptyList());
@@ -250,7 +250,6 @@ class AccountServiceTest {
 
 		then(accountUserRepository).should(times(1)).findById(anyLong());
 		then(accountRepository).should(times(1)).findByAccountUser(any(AccountUser.class));
-
 
 	}
 

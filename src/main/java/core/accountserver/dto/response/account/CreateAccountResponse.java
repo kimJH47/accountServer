@@ -1,4 +1,4 @@
-package core.accountserver.dto.response;
+package core.accountserver.dto.response.account;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DeleteAccountResponse {
+public class CreateAccountResponse {
 	private Long userId;
 	private String accountNumber;
-	private LocalDateTime unRegisteredAt;
+	private LocalDateTime registeredAt;
 }

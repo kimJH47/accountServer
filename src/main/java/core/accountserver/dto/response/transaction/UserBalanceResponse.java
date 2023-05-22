@@ -1,4 +1,4 @@
-package core.accountserver.dto.response;
+package core.accountserver.dto.response.transaction;
 
 import java.time.LocalDateTime;
 

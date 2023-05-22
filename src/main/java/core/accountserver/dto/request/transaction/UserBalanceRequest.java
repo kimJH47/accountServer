@@ -1,4 +1,4 @@
-package core.accountserver.dto.request;
+package core.accountserver.dto.request.transaction;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;

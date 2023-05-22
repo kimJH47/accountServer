@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import core.accountserver.dto.request.CreateAccountRequest;
-import core.accountserver.dto.request.DeleteAccountRequest;
-import core.accountserver.dto.response.CreateAccountResponse;
-import core.accountserver.dto.response.DeleteAccountResponse;
+import core.accountserver.dto.request.account.CreateAccountRequest;
+import core.accountserver.dto.request.account.DeleteAccountRequest;
+import core.accountserver.dto.response.account.CreateAccountResponse;
+import core.accountserver.dto.response.account.DeleteAccountResponse;
 import core.accountserver.dto.response.Response;
 import core.accountserver.service.AccountService;
 import lombok.RequiredArgsConstructor;

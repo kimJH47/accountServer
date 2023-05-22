@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
 import core.accountserver.domain.transaction.Transaction;
-import core.accountserver.dto.response.UserBalanceResponse;
+import core.accountserver.dto.response.transaction.UserBalanceResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountExceedBalanceException;
 import core.accountserver.exception.AccountNotFoundException;

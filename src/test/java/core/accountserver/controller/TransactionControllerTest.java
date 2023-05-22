@@ -22,8 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.domain.transaction.TransactionResultType;
-import core.accountserver.dto.request.UserBalanceRequest;
-import core.accountserver.dto.response.UserBalanceResponse;
+import core.accountserver.dto.request.transaction.UserBalanceRequest;
+import core.accountserver.dto.response.transaction.UserBalanceResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountExceedBalanceException;
 import core.accountserver.exception.AccountNotFoundException;

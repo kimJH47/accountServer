@@ -1,4 +1,4 @@
-package core.accountserver.dto.response;
+package core.accountserver.dto.response.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
