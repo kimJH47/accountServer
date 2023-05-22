@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserBalanceResponse {
+public class UseBalanceResponse {
 	private String accountNumber;
 	private TransactionResultType transactionResult;
 	private String transactionId;

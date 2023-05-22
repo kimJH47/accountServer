@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import core.accountserver.domain.transaction.TransactionResultType;
 import core.accountserver.dto.request.transaction.UserBalanceRequest;
-import core.accountserver.dto.response.transaction.UserBalanceResponse;
+import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountExceedBalanceException;
 import core.accountserver.exception.AccountNotFoundException;
@@ -48,7 +48,7 @@ class TransactionControllerTest {
 	void useBalance() throws Exception {
 		//given
 		given(transactionService.useBalance(anyLong(), anyString(), anyLong()))
-			.willReturn(UserBalanceResponse.builder()
+			.willReturn(UseBalanceResponse.builder()
 				.accountNumber("1000000000")
 				.transactedAt(LocalDateTime.now())
 				.amount(12345L)

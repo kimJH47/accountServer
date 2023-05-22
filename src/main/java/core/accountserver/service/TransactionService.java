@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import core.accountserver.domain.AccountUser;
 import core.accountserver.domain.account.Account;
 import core.accountserver.domain.transaction.Transaction;
-import core.accountserver.dto.response.transaction.UserBalanceResponse;
+import core.accountserver.dto.response.transaction.UseBalanceResponse;
 import core.accountserver.exception.AccountAlreadyUnregisteredException;
 import core.accountserver.exception.AccountExceedBalanceException;
 import core.accountserver.exception.AccountNotFoundException;
@@ -30,7 +30,7 @@ public class TransactionService {
 	private final AccountRepository accountRepository;
 
 	@Transactional
-	public UserBalanceResponse useBalance(Long userId, String accountNumber, Long amount) {
+	public UseBalanceResponse useBalance(Long userId, String accountNumber, Long amount) {
 
 		AccountUser accountUser = accountUserRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException("해당 사용자가 존재하지 않습니다."));
@@ -42,7 +42,7 @@ public class TransactionService {
 		account.userBalance(amount);
 		Transaction transaction = transactionRepository.save(Transaction.createSuccessTransaction(account, amount));
 
-		return UserBalanceResponse.builder()
+		return UseBalanceResponse.builder()
 			.accountNumber(accountNumber)
 			.transactionResult(transaction.getTransactionResultType())
 			.transactionId(transaction.getTransactionId())
